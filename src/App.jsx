@@ -1,10 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
-let nextId = 1
+function loadTasks() {
+  try {
+    const saved = localStorage.getItem('tasks')
+    return saved ? JSON.parse(saved) : []
+  } catch {
+    return []
+  }
+}
+
+let nextId = Math.max(0, ...loadTasks().map(t => t.id)) + 1
 
 export default function App() {
-  const [tasks, setTasks] = useState([])
+  const [tasks, setTasks] = useState(loadTasks)
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }, [tasks])
   const [inputValue, setInputValue] = useState('')
 
   function addTask() {
